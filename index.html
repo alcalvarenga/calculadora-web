@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora Interativa</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            padding: 30px;
+            max-width: 400px;
+            width: 100%;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 30px;
+            font-size: 28px;
+        }
+
+        .display {
+            background: #f0f0f0;
+            border: 2px solid #667eea;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            text-align: right;
+            font-size: 32px;
+            font-weight: bold;
+            color: #333;
+            word-wrap: break-word;
+            word-break: break-all;
+            min-height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+        }
+
+        .buttons {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+        }
+
+        button {
+            padding: 20px;
+            font-size: 20px;
+            font-weight: bold;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background-color: #f0f0f0;
+            color: #333;
+        }
+
+        button:hover {
+            background-color: #e0e0e0;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        button:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+
+        .operator {
+            background-color: #667eea;
+            color: white;
+        }
+
+        .operator:hover {
+            background-color: #5568d3;
+        }
+
+        .equals {
+            background-color: #48bb78;
+            color: white;
+            grid-column: span 2;
+        }
+
+        .equals:hover {
+            background-color: #38a169;
+        }
+
+        .clear {
+            background-color: #f56565;
+            color: white;
+            grid-column: span 2;
+        }
+
+        .clear:hover {
+            background-color: #e53e3e;
+        }
+
+        .delete {
+            background-color: #ed8936;
+            color: white;
+        }
+
+        .delete:hover {
+            background-color: #dd6b20;
+        }
+
+        .info {
+            text-align: center;
+            margin-top: 20px;
+            color: #666;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧮 Calculadora</h1>
+        <div class="display" id="display">0</div>
+        
+        <div class="buttons">
+            <button class="clear" onclick="limpar()">C</button>
+            <button class="delete" onclick="deletar()">DEL</button>
+            <button class="operator" onclick="selecionarOperador('/')">÷</button>
+            <button class="operator" onclick="selecionarOperador('*')">×</button>
+            
+            <button onclick="adicionarNumero('7')">7</button>
+            <button onclick="adicionarNumero('8')">8</button>
+            <button onclick="adicionarNumero('9')">9</button>
+            <button class="operator" onclick="selecionarOperador('-')">−</button>
+            
+            <button onclick="adicionarNumero('4')">4</button>
+            <button onclick="adicionarNumero('5')">5</button>
+            <button onclick="adicionarNumero('6')">6</button>
+            <button class="operator" onclick="selecionarOperador('+')">+</button>
+            
+            <button onclick="adicionarNumero('1')">1</button>
+            <button onclick="adicionarNumero('2')">2</button>
+            <button onclick="adicionarNumero('3')">3</button>
+            <button class="operator" onclick="selecionarOperador('%')">%</button>
+            
+            <button onclick="adicionarNumero('0')" style="grid-column: span 2;">0</button>
+            <button onclick="adicionarNumero('.')">.</button>
+            <button class="equals" onclick="calcular()">=</button>
+        </div>
+        
+        <div class="info">
+            💡 Clique nos botões ou use seu teclado para calcular
+        </div>
+    </div>
+
+    <script>
+        let display = document.getElementById('display');
+        let valor = '';
+        let operador = '';
+        let valorAnterior = '';
+
+        function adicionarNumero(num) {
+            if (num === '.' && valor.includes('.')) return;
+            valor += num;
+            atualizarDisplay();
+        }
+
+        function selecionarOperador(op) {
+            if (valor === '') return;
+            if (valorAnterior !== '') {
+                calcular();
+            }
+            operador = op;
+            valorAnterior = valor;
+            valor = '';
+        }
+
+        function calcular() {
+            if (valorAnterior === '' || valor === '' || operador === '') return;
+            
+            let resultado = 0;
+            const a = parseFloat(valorAnterior);
+            const b = parseFloat(valor);
+
+            switch(operador) {
+                case '+':
+                    resultado = a + b;
+                    break;
+                case '-':
+                    resultado = a - b;
+                    break;
+                case '*':
+                    resultado = a * b;
+                    break;
+                case '/':
+                    if (b === 0) {
+                        display.textContent = '❌ Erro: Divisão por zero';
+                        valor = '';
+                        operador = '';
+                        valorAnterior = '';
+                        return;
+                    }
+                    resultado = a / b;
+                    break;
+                case '%':
+                    resultado = a % b;
+                    break;
+            }
+
+            valor = resultado.toString();
+            operador = '';
+            valorAnterior = '';
+            atualizarDisplay();
+        }
+
+        function limpar() {
+            valor = '';
+            operador = '';
+            valorAnterior = '';
+            atualizarDisplay();
+        }
+
+        function deletar() {
+            valor = valor.slice(0, -1);
+            atualizarDisplay();
+        }
+
+        function atualizarDisplay() {
+            if (valor === '') {
+                display.textContent = '0';
+            } else {
+                display.textContent = valor;
+            }
+        }
+
+        // Suporte a teclado
+        document.addEventListener('keydown', (e) => {
+            if (e.key >= '0' && e.key <= '9') adicionarNumero(e.key);
+            if (e.key === '.') adicionarNumero('.');
+            if (e.key === '+' || e.key === '-') selecionarOperador(e.key);
+            if (e.key === '*') {
+                e.preventDefault();
+                selecionarOperador('*');
+            }
+            if (e.key === '/') {
+                e.preventDefault();
+                selecionarOperador('/');
+            }
+            if (e.key === '%') selecionarOperador('%');
+            if (e.key === 'Enter') calcular();
+            if (e.key === 'Backspace') deletar();
+            if (e.key === 'Escape') limpar();
+        });
+
+        atualizarDisplay();
+    </script>
+</body>
+</html>
